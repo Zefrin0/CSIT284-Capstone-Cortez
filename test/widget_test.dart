@@ -31,5 +31,10 @@ void main() {
 
     expect(find.text('Clinic queue'), findsOneWidget);
     expect(find.text('Mia Thompson'), findsOneWidget);
+    expect(find.text('1'), findsOneWidget);
+    await tester.tap(find.text('Mark attended').first);
+    await tester.pump();
+
+    expect(find.text('Attended'), findsOneWidget);
   });
 }

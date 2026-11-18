@@ -28,6 +28,7 @@ class QueueList extends StatelessWidget {
 
         return Card(
           child: ListTile(
+            leading: CircleAvatar(child: Text('${index + 1}')),
             title: Text(visit.studentName),
             subtitle: Text(
               '${visit.studentId}\n${visit.symptom}\n'
