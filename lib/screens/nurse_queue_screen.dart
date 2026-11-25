@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/clinic_repository.dart';
 import '../models/clinic_visit.dart';
+import '../widgets/app_background.dart';
 import '../widgets/edit_visit_dialog.dart';
 import '../widgets/queue_list.dart';
 
@@ -83,30 +84,32 @@ class NurseQueueScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Clinic queue')),
-      body: StreamBuilder<List<ClinicVisit>>(
-        stream: repository.visitStream(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Text(
-                  'Could not load the queue.\n${snapshot.error}',
-                  textAlign: TextAlign.center,
+      body: AppBackground(
+        child: StreamBuilder<List<ClinicVisit>>(
+          stream: repository.visitStream(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    'Could not load the queue.\n${snapshot.error}',
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ),
+              );
+            }
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return QueueList(
+              visits: snapshot.data!,
+              onMarkAttended: (visit) => _markAttended(context, visit),
+              onEdit: (visit) => _edit(context, visit),
+              onDelete: (visit) => _delete(context, visit),
             );
-          }
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          return QueueList(
-            visits: snapshot.data!,
-            onMarkAttended: (visit) => _markAttended(context, visit),
-            onEdit: (visit) => _edit(context, visit),
-            onDelete: (visit) => _delete(context, visit),
-          );
-        },
+          },
+        ),
       ),
     );
   }

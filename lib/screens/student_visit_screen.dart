@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/clinic_repository.dart';
+import '../widgets/app_background.dart';
 import '../widgets/visit_form.dart';
 import 'nurse_queue_screen.dart';
 
@@ -42,9 +43,11 @@ class StudentVisitScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: VisitForm(
-        firebaseReady: repository.firebaseReady,
-        onSubmit: _addVisit,
+      body: AppBackground(
+        child: VisitForm(
+          firebaseReady: repository.firebaseReady,
+          onSubmit: _addVisit,
+        ),
       ),
     );
   }
