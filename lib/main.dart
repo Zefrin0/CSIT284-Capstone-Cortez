@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 
+import 'models/clinic_repository.dart';
 import 'screens/student_visit_screen.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ClinicVisitApp());
+
+  // Falls back to demo mode automatically if Firebase is not configured.
+  final repository = ClinicRepository();
+  await repository.initialize();
+
+  runApp(ClinicVisitApp(repository: repository));
 }
 
 class ClinicVisitApp extends StatelessWidget {
-  const ClinicVisitApp({super.key});
+  const ClinicVisitApp({super.key, required this.repository});
+
+  final ClinicRepository repository;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +27,7 @@ class ClinicVisitApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E6B5C)),
       ),
-      home: const StudentVisitScreen(),
+      home: StudentVisitScreen(repository: repository),
     );
   }
 }

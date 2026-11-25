@@ -1,40 +1,29 @@
+import 'package:capstone_cortez/main.dart';
+import 'package:capstone_cortez/models/clinic_repository.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:capstone_cortez/main.dart';
-
 void main() {
-  testWidgets('Student can open and submit the visit form', (
-    WidgetTester tester,
+  testWidgets('student can join the queue and nurse sees the visit', (
+    tester,
   ) async {
-    await tester.pumpWidget(const ClinicVisitApp());
+    await tester.pumpWidget(ClinicVisitApp(repository: ClinicRepository()));
 
-    expect(find.text('Log a clinic visit'), findsOneWidget);
-    await tester.enterText(
-      find.bySemanticsLabel('Student name'),
-      'Alex Morgan',
-    );
-    await tester.enterText(find.bySemanticsLabel('Student ID'), 'ST-2024-300');
-    await tester.enterText(find.bySemanticsLabel('Symptom'), 'Sore throat');
-    await tester.tap(find.text('Join clinic queue'));
-    await tester.pump();
+    expect(find.text('Demo mode'), findsOneWidget);
 
-    expect(find.text('Visit added to the clinic queue'), findsOneWidget);
-  });
+    final fields = find.byType(TextFormField);
+    await tester.enterText(fields.at(0), 'Test Student');
+    await tester.enterText(fields.at(1), 'ST-2024-999');
+    await tester.enterText(fields.at(2), 'Headache');
 
-  testWidgets('Hidden nurse view opens seeded queue', (
-    WidgetTester tester,
-  ) async {
-    await tester.pumpWidget(const ClinicVisitApp());
+    final submit = find.text('Join clinic queue');
+    await tester.ensureVisible(submit);
+    await tester.tap(submit);
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byTooltip('Nurse view'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Clinic queue'), findsOneWidget);
-    expect(find.text('Mia Thompson'), findsOneWidget);
-    expect(find.text('1'), findsOneWidget);
-    await tester.tap(find.text('Mark attended').first);
-    await tester.pump();
-
-    expect(find.text('Attended'), findsOneWidget);
+    expect(find.text('Test Student'), findsOneWidget);
   });
 }

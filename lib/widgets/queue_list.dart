@@ -7,10 +7,14 @@ class QueueList extends StatelessWidget {
     super.key,
     required this.visits,
     required this.onMarkAttended,
+    required this.onEdit,
+    required this.onDelete,
   });
 
   final List<ClinicVisit> visits;
   final ValueChanged<ClinicVisit> onMarkAttended;
+  final ValueChanged<ClinicVisit> onEdit;
+  final ValueChanged<ClinicVisit> onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +31,7 @@ class QueueList extends StatelessWidget {
         final attended = visit.status == VisitStatus.attended;
 
         return Card(
+          key: ValueKey(visit.id),
           child: ListTile(
             leading: CircleAvatar(child: Text('${index + 1}')),
             title: Text(visit.studentName),
@@ -35,12 +40,29 @@ class QueueList extends StatelessWidget {
               '${_formatTime(visit.visitedAt)}',
             ),
             isThreeLine: true,
-            trailing: attended
-                ? const Chip(label: Text('Attended'))
-                : FilledButton(
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (attended)
+                  const Chip(label: Text('Attended'))
+                else
+                  FilledButton(
                     onPressed: () => onMarkAttended(visit),
-                    child: const Text('Mark attended'),
+                    child: const Text('Attend'),
                   ),
+                PopupMenuButton<String>(
+                  tooltip: 'More actions',
+                  onSelected: (value) {
+                    if (value == 'edit') onEdit(visit);
+                    if (value == 'delete') onDelete(visit);
+                  },
+                  itemBuilder: (context) => const [
+                    PopupMenuItem(value: 'edit', child: Text('Edit')),
+                    PopupMenuItem(value: 'delete', child: Text('Delete')),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },

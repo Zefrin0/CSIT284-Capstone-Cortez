@@ -8,11 +8,12 @@ A focused Flutter demo for logging clinic visits and showing a simple waiting qu
 
 ## Features
 
-- Student enters a name, student ID, and symptom.
-- Visit time is recorded automatically.
-- Hidden nurse view shows waiting visits and can mark a visit as attended.
-- Firebase Cloud Firestore support with an in-app demo-mode fallback.
-- Seeded queue data for offline demos.
+- **Create:** student enters a name, student ID, and symptom; visit time is recorded automatically (server timestamp).
+- **Read:** nurse view shows a live, real-time queue (Firestore stream).
+- **Update:** nurse can edit a visit's details or mark it as attended.
+- **Delete:** nurse can delete a visit (with confirmation).
+- Firebase Cloud Firestore support with an in-app demo-mode fallback (same CRUD API, in-memory).
+- Errors from the backend are shown to the user instead of failing silently.
 
 ## Run
 
@@ -36,7 +37,13 @@ Until configuration is added, the app clearly displays **Demo mode** and uses se
 1. Enter a student name, student ID, and symptom.
 2. Tap **Join clinic queue**.
 3. Tap the hospital icon in the top-right to open the hidden nurse queue.
-4. Tap **Mark attended** for a waiting visit.
+4. Tap **Attend** to mark a visit as attended, or the ⋮ menu to **Edit** or **Delete** it.
+
+## Tests
+
+```bash
+flutter test
+```
 
 ## Scope
 

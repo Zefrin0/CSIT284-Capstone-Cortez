@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 typedef VisitSubmitCallback =
-    void Function({
+    Future<void> Function({
       required String name,
       required String id,
       required String symptom,
@@ -35,22 +35,34 @@ class _VisitFormState extends State<VisitForm> {
     super.dispose();
   }
 
-  void _submit() {
-    if (!_formKey.currentState!.validate()) return;
+  bool _submitting = false;
 
-    widget.onSubmit(
-      name: _nameController.text.trim(),
-      id: _idController.text.trim(),
-      symptom: _symptomController.text.trim(),
-    );
-    _formKey.currentState!.reset();
-    _nameController.clear();
-    _idController.clear();
-    _symptomController.clear();
+  Future<void> _submit() async {
+    if (_submitting || !_formKey.currentState!.validate()) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Visit added to the clinic queue')),
-    );
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _submitting = true);
+    try {
+      await widget.onSubmit(
+        name: _nameController.text.trim(),
+        id: _idController.text.trim(),
+        symptom: _symptomController.text.trim(),
+      );
+      if (!mounted) return;
+      _formKey.currentState!.reset();
+      _nameController.clear();
+      _idController.clear();
+      _symptomController.clear();
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Visit added to the clinic queue')),
+      );
+    } catch (error) {
+      messenger.showSnackBar(
+        SnackBar(content: Text('Could not save visit: $error')),
+      );
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
   }
 
   @override
@@ -110,7 +122,7 @@ class _VisitFormState extends State<VisitForm> {
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton.icon(
-                      onPressed: _submit,
+                      onPressed: _submitting ? null : _submit,
                       icon: const Icon(Icons.add),
                       label: const Text('Join clinic queue'),
                     ),
